@@ -1,6 +1,8 @@
 #ifndef _KERNEL_VGA_H
 #define _KERNEL_VGA_H
 
+
+
 enum vga_color{
     VGA_BLACK 			= 0,
     VGA_BLUE 			= 1,
