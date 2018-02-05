@@ -49,6 +49,29 @@ doesn't make sense to return from this function as the bootloader is gone.
 */
 .section .text
 .global _start
+
+.global write_port
+.global read_port
+
+.type write_port, @function
+write_port:
+	# eax is twice as wide as edx register
+	# Read two parameters off of the stack
+	mov 0x8(%esp), %eax
+	mov 0x4(%esp), %edx
+
+	# Output from
+	out %al, %dx
+	ret
+
+.type read_port, @function
+read_port:
+	# Take port to read from stack and copy to edx register.
+	mov 0x4(%esp), %edx
+	in %dx, %al
+	ret
+
+
 .type _start, @function
 _start:
 	/*

@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "port.h"
+
 #if defined(__linux__)
 #error "You are not using a cross-compiler, This needs to be compiled with a ix86-elf compiler"
 #endif
@@ -25,8 +27,7 @@ size_t terminal_column;
 
 volatile uint16_t* terminal_buffer;
 
-void terminal_initialize(void)
-{
+void terminal_initialize(void) {
     terminal_row = 0;
     terminal_column = 0;
 
@@ -42,8 +43,12 @@ void terminal_initialize(void)
     }
 }
 
-void render_splash(void)
-{
+void disable_cursor(void) {
+    write_port(0x3D4, 0x0A);
+    write_port(0x3D5, 0x20);
+}
+
+void render_splash(void) {
     // Placeholder splash screen
     const char *logo[7];
     logo[0] = "dP       MMP\"\"\"\"\"YMM MP\"\"\"\"\"\"`MM";
@@ -68,6 +73,9 @@ void render_splash(void)
             index++;
         }
     }
+
+    // Disable the cursor, as we only want to show the splash screen
+    disable_cursor();
 }
 
 void kernel_main(void)
