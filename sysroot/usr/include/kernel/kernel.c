@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "vga.h"
 #include "port.h"
 
 #if defined(__linux__)
@@ -12,12 +13,6 @@
 #error "This needs to be compiled with a ix86-elf compiler"
 #endif
 
-static inline uint16_t vga_entry(unsigned char uc)
-{
-    // create a 16 bit entry for the screen, first byte is the character, second byte is the color
-    // 2 is the color green, shifted by 8 bits
-    return (uint16_t) uc | 2 << 8;
-}
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -34,11 +29,13 @@ void terminal_initialize(void) {
     // Point the terminal_buffer at the section of memory that rendered to the screen by the hardware
     terminal_buffer = (uint16_t*) 0xB8000;
 
+    uint8_t clear_color = vga_color(0, 0);
+
     // Clear the screen
     for (size_t y = 0; y < VGA_HEIGHT; y++) {
         for (size_t x = 0; x < VGA_WIDTH; x++) {
             const size_t index = y * VGA_WIDTH + x;
-            terminal_buffer[index] = vga_entry(' ');
+            terminal_buffer[index] = vga_entry(' ', clear_color);
         }
     }
 }
@@ -63,12 +60,14 @@ void render_splash(void) {
     size_t start_x = 24;
     size_t start_y = 9;
 
+    uint8_t logo_color = vga_color(VGA_GREEN, VGA_BLACK);
+
     // Render the logo
     for (size_t i=0; i<7; i++){
         size_t index = (start_y+i)*80 + start_x;
         size_t j = 0;
         while (logo[0][j]) {
-            terminal_buffer[index] = vga_entry(logo[i][j]);
+            terminal_buffer[index] = vga_entry(logo[i][j], logo_color);
             j++;
             index++;
         }
