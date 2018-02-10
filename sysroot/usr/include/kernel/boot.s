@@ -50,11 +50,20 @@ doesn't make sense to return from this function as the bootloader is gone.
 .section .text
 .global _start
 
-.global write_port
-.global read_port
+.global outb
+.global inb
 
-.type write_port, @function
-write_port:
+.global load_idt
+
+// Function to handle keyboard interrupts
+.global keyboard_handler
+// Return function for the interrupts
+.extern keyboard_handler_main
+
+
+
+.type outb, @function
+outb:
 	# eax is twice as wide as edx register
 	# Read two parameters off of the stack
 	mov 0x8(%esp), %eax
@@ -64,12 +73,27 @@ write_port:
 	out %al, %dx
 	ret
 
-.type read_port, @function
-read_port:
+.type inb, @function
+inb:
 	# Take port to read from stack and copy to edx register.
 	mov 0x4(%esp), %edx
 	in %dx, %al
 	ret
+
+.type load_idt, @function
+load_idt:
+    # Take the pointer of the IDT
+	mov 0x4(%esp), %edx
+	# Load the interrupt descriptor table
+	lidt (%edx)
+	# Set the interrupt flag
+	sti
+	ret
+
+.type keyboard_handler, @function
+keyboard_handler:
+    call keyboard_handler_main
+    iret
 
 
 .type _start, @function

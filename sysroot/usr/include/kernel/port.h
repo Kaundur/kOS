@@ -1,8 +1,8 @@
-#ifndef _KERNEL_PORT_H
-#define _KERNEL_PORT_H
+#ifndef KOS_PORT_H
+#define KOS_PORT_H
 
 // Handles read/write of ports between the assembly and c
-void write_port(unsigned short port, unsigned char data);
-char read_port(unsigned short port);
+void outb(unsigned short port, unsigned char data);
+char inb(unsigned short port);
 
-#endif
+#endif //KOS_PORT_H

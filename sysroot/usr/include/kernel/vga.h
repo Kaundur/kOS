@@ -1,5 +1,5 @@
-#ifndef _KERNEL_VGA_H
-#define _KERNEL_VGA_H
+#ifndef KOS_VGA_H
+#define KOS_VGA_H
 
 
 
@@ -38,4 +38,4 @@ static uint16_t vga_entry(unsigned char uc, uint8_t color) {
 
 
 
-#endif
+#endif //KOS_VGA_H
